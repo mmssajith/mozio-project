@@ -9,18 +9,27 @@ from .serializers import ProviderSerializer, PolygonSerializer
 # Endpoints for PROVIDERS
 @api_view(['GET'])
 def get_all_provider(request):
+    """
+    This endpoint returns all providers.
+    """
     snippets = Providers.objects.all()
     serializer = ProviderSerializer(snippets, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def get_single_provider(request, name):
+    """
+    This endpoint returns a single provider.
+    """
     snippets = Providers.objects.get(name=name)
     serializer = ProviderSerializer(snippets, many=False)
     return Response(serializer.data)
 
 @api_view(['PUT'])
 def update_single_provider(request, name):
+    """
+    This endpoint updates a single provider.
+    """
     snippets = Providers.objects.get(name=name)
     serializer = ProviderSerializer(snippets, data=request.data)
     if serializer.is_valid():
@@ -29,12 +38,18 @@ def update_single_provider(request, name):
 
 @api_view(['DELETE'])
 def delete_single_provider(request, name):
+    """
+    This endpoint deletes a single provider.
+    """
     snippets = Providers.objects.get(name=name)
     snippets.delete()
     return Response("Delete Successful")
 
 @api_view(['POST'])
 def new_provider(request):
+    """
+    This endpoint creates a new provider.
+    """
     serializer = ProviderSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()  # save to db
@@ -44,6 +59,9 @@ def new_provider(request):
 # Endpoints for POLYGONS
 @api_view(['GET'])
 def get_single_area(request, id, name):
+    """
+    This endpoint returns a single area.
+    """
     provider = Providers.objects.get(name=name)
     polygons = Polygons.objects.filter(Providers=provider).get(pk=id)
     serializer = PolygonSerializer(polygons, many=False)
@@ -51,6 +69,9 @@ def get_single_area(request, id, name):
 
 @api_view(['GET'])
 def get_all_area_by_provider(request, name):
+    """
+    This endpoint returns all areas by provider.
+    """
     provider = Providers.objects.get(name=name)
     polygons = Polygons.objects.filer(Providers=provider)
     serializer = PolygonSerializer(polygons, many=False)
@@ -58,6 +79,9 @@ def get_all_area_by_provider(request, name):
 
 @api_view(['POST'])
 def create_area(request, name, pk):
+    """
+    This endpoint creates a new area.
+    """
     provider = Providers.objects.get(name=name)
     if len(request.data['area']['coordinates']) == 1:
         polygon_data = Polygon(
@@ -79,6 +103,9 @@ def create_area(request, name, pk):
 
 @api_view(['PUT'])
 def update_area(request, id, name):
+    """
+    This endpoint updates a single area.
+    """
     provider = Providers.objects.get(name=name)
     polygons = Polygons.objects.filter(Providers=provider).get(pk=id)
     serializer = PolygonSerializer(polygons, data=request.data)
@@ -88,6 +115,9 @@ def update_area(request, id, name):
 
 @api_view(['DELETE'])
 def delete_single_area(request, id, name):
+    """
+    This endpoint deletes a single area.
+    """
     provider = Providers.objects.get(name=name)
     polygons = Polygons.objects.filter(Providers=provider).get(pk=id)
     polygons.delete()
@@ -96,6 +126,9 @@ def delete_single_area(request, id, name):
 # Polygon Querying
 @api_view(['GET'])
 def query_data(request):
+    """
+    This endpoint returns all areas that intersect with the given point.
+    """
     lat = float(request.GET.get('lat'))
     lng = float(request.GET.get('lng'))
     if lat == None or lng == None:
